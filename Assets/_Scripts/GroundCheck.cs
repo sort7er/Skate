@@ -19,7 +19,7 @@ public class GroundCheck : MonoBehaviour
         }
     }
 
-    private bool IsGrounded()
+    public bool IsGrounded()
     {
         if (Physics2D.OverlapCircle(transform.position, groundDistance, groundMask))
         {

@@ -2,45 +2,58 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using DG.Tweening;
 
 public class HoldButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
+
     public UnityEvent OnPress;
     public UnityEvent OnRelease;
 
-    public CanvasGroup group;
-    public Image icon;
-
+    [Header("Visuals")]
+    public float tweenDuration = 0.1f;
     public Color activeColor;
-    public Color inActiveColor;
+    public Color defaultColor;
 
-    private float defaultAlpha = 0.5f;
-    private float activeAlpha = 1;
+    [Header("References")]
+    public CanvasGroup group;
+    public Image background;
+    public Image icon;
+    public MovementButtons movementButtons;
 
     private void Awake()
     {
-        InActive();
+        DefaultVisuals();
     }
-
-    public void Active()
+    public void ActiveVisuals()
     {
-        OnPress?.Invoke();
-        icon.color = activeColor;
-        group.alpha = activeAlpha;
+        icon.DOColor(activeColor, tweenDuration);
+        group.DOFade(1, tweenDuration);
+        background.rectTransform.DOScale(Vector3.one * 1.1f, tweenDuration).SetEase(Ease.OutFlash);
     }
-    public void InActive()
+    public void DefaultVisuals()
     {
-        OnRelease?.Invoke();
-        icon.color = inActiveColor;
-        group.alpha = defaultAlpha;
+        icon.DOColor(defaultColor, tweenDuration);
+        group.DOFade(0.5f, tweenDuration);
+        background.rectTransform.DOScale(Vector3.one, tweenDuration).SetEase(Ease.OutFlash);
     }
     public void OnPointerDown(PointerEventData eventData)
     {
-        Active();
+        if (movementButtons.currentButton == null)
+        {
+            ActiveVisuals();
+            OnPress?.Invoke();
+            movementButtons.SetBusy(this);
+        }
     }
     public void OnPointerUp(PointerEventData eventData)
     {
-        InActive();
+        if (movementButtons.currentButton == this)
+        {
+            DefaultVisuals();
+            OnRelease?.Invoke();
+            movementButtons.SetAvailable();
+        }
     }
 
 }
