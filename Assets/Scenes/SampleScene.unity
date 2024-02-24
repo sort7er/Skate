@@ -456,6 +456,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab7a05212d5025d498803e324859bbc4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  minDistance: 10
+  maxDistance: 30
+  lerp: 2
+  playerMovement: {fileID: 1237503613}
+  cinemachineVirtualCamera: {fileID: 139747125}
 --- !u!4 &192698763 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5855187395663443336, guid: dee4e3aaec8007148ba1fd65d9c44d28,
