@@ -15,6 +15,7 @@ public class PlayerMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         check = GetComponent<GroundCheck>();
+
         NormalSpeed();
     }
 
@@ -33,8 +34,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     private void Update()
-    {
-        Debug.Log(rb.velocity.magnitude);
+    {      
         SpeedControl();
     }
 
@@ -46,4 +46,14 @@ public class PlayerMovement : MonoBehaviour
             rb.velocity = speed;
         }
     }
+
+    public void Crouch()
+    {
+        Debug.Log("Yeah");
+    }
+    public void Release()
+    {
+        Debug.Log("done");
+    }
+
 }
