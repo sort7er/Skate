@@ -11,6 +11,10 @@ public class PlayerMovement : MonoBehaviour
         None
     }
 
+    [Header("In air")]
+    public float rotationSpeed;
+    public float downSpeed;
+
     [Header("Crouch")]
     public float crouchMultiplierDown;
     public float crouchMultiplierUp;
@@ -22,12 +26,19 @@ public class PlayerMovement : MonoBehaviour
     public float maxSpeed = 30;
     public float airDecrease = 1f;
 
+    public float actuallSpeed { get; private set; }
+
+
+
     private Rigidbody2D rb;
     private GroundCheck check;
+    private PlayerAction currentAction;
 
     private float currentSpeed;
     private float speedMultiplier;
-    private PlayerAction currentAction;
+
+    private bool forceDown;
+
 
     private void Awake()
     {
@@ -40,6 +51,11 @@ public class PlayerMovement : MonoBehaviour
     private void FixedUpdate()
     {
         rb.AddForce(check.forwardDirection * currentSpeed, ForceMode2D.Force);
+
+        if(forceDown)
+        {
+            rb.AddForce(Vector2.down * downSpeed, ForceMode2D.Force);
+        }
     }
 
     private void Update()
@@ -49,13 +65,34 @@ public class PlayerMovement : MonoBehaviour
 
         if (currentAction == PlayerAction.Left)
         {
-            Debug.Log("RotateLeft");
+            if (!check.IsGrounded())
+            {
+                Rotate(1);
+            }
         }
         else if(currentAction == PlayerAction.Right)
         {
-            Debug.Log("RotateRight");
+            if (!check.IsGrounded())
+            {
+                Rotate(-1);
+            }
         }
         else if(currentAction == PlayerAction.Down)
+        {
+            Down();
+        }
+        else
+        {
+            speedMultiplier = 1;
+        }
+    }
+    private void Rotate(float direction)
+    {
+        transform.Rotate(Vector3.forward * direction * rotationSpeed * Time.deltaTime);
+    }
+    private void Down()
+    {
+        if (check.IsGrounded())
         {
             if (check.slopeAngle > 0)
             {
@@ -65,21 +102,24 @@ public class PlayerMovement : MonoBehaviour
             {
                 speedMultiplier = crouchMultiplierDown;
             }
+            forceDown = false;
         }
         else
         {
-            speedMultiplier = 1;
+            forceDown = true;
         }
     }
 
     private void DetermineSpeed()
     {
-        if (rb.velocity.magnitude < minSpeed)
+        actuallSpeed = rb.velocity.magnitude;
+
+        if (actuallSpeed < minSpeed)
         {
             currentSpeed = minSpeed;
             return;
         }
-        if (rb.velocity.magnitude > maxSpeed)
+        if (actuallSpeed > maxSpeed)
         {
             return;
         }
@@ -98,9 +138,19 @@ public class PlayerMovement : MonoBehaviour
 
     private void SpeedControl()
     {
-        if (rb.velocity.magnitude < minSpeed || rb.velocity.x < minSpeed)
+        if (actuallSpeed < minSpeed)
         {
-            Vector2 speed = rb.velocity.normalized * minSpeed;
+            float directionCheck;
+            if(rb.velocity.x < 0)
+            {
+                directionCheck = -1;
+            }
+            else
+            {
+                directionCheck = 1;
+            }
+
+            Vector2 speed = rb.velocity.normalized * minSpeed * directionCheck;
             rb.velocity = speed;
         }
         else if (rb.velocity.magnitude > maxSpeed)
@@ -130,6 +180,7 @@ public class PlayerMovement : MonoBehaviour
         if(currentAction == PlayerAction.Down)
         {
             graphicTrans.DOScaleY(1, 0.1f);
+            forceDown = false;
         }
 
         currentAction = PlayerAction.None;
