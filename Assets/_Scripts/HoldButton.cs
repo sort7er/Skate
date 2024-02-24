@@ -1,14 +1,15 @@
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
-public class HoldButton : MonoBehaviour
+public class HoldButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
     public UnityEvent OnPress;
     public UnityEvent OnRelease;
 
     public CanvasGroup group;
-    public Image image;
+    public Image icon;
 
     public Color activeColor;
     public Color inActiveColor;
@@ -24,13 +25,22 @@ public class HoldButton : MonoBehaviour
     public void Active()
     {
         OnPress?.Invoke();
-        image.color = activeColor;
+        icon.color = activeColor;
         group.alpha = activeAlpha;
     }
     public void InActive()
     {
         OnRelease?.Invoke();
-        image.color = inActiveColor;
+        icon.color = inActiveColor;
         group.alpha = defaultAlpha;
     }
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        Active();
+    }
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        InActive();
+    }
+
 }
