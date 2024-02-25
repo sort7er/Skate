@@ -1,21 +1,32 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class UIMaster : MonoBehaviour
 {
-    public RectTransform buttons;
+    public static UIMaster instance;
+
+    public Score score;
+    public RectTransform gameScreen;
     public RectTransform gameOver;
+    public MovementButtons movementButtons;
+    public TextMeshProUGUI finalScore;
     
     private FailCheck fail;
+    private PlayerScore playerScore;
 
     private void Awake()
     {
+        instance = this;
         fail = FindFirstObjectByType<FailCheck>();
+        playerScore= FindFirstObjectByType<PlayerScore>();
+
+        playerScore.OnFinalScore += SetFinalScore;
         fail.OnDead += GameOver;
     }
     private void Start()
     {
-        buttons.gameObject.SetActive(true);
+        gameScreen.gameObject.SetActive(true);
         gameOver.gameObject.SetActive(false);
     }
     private void OnDisable()
@@ -24,7 +35,8 @@ public class UIMaster : MonoBehaviour
     }
     private void GameOver()
     {
-        buttons.gameObject.SetActive(false);
+        //movementButtons.SetAvailable();
+        gameScreen.gameObject.SetActive(false);
         gameOver.gameObject.SetActive(true);
     }
 
@@ -35,5 +47,9 @@ public class UIMaster : MonoBehaviour
     private void RestartDelay()
     {
         SceneManager.LoadScene(0);
+    }
+    private void SetFinalScore(float finalScore)
+    {
+        this.finalScore.text = finalScore.ToString("F2");
     }
 }

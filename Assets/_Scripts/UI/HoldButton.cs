@@ -56,21 +56,28 @@ public class HoldButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     }
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (movementButtons.currentButton == null)
-        {
-            ActiveVisuals();
-            OnPress?.Invoke();
-            movementButtons.SetBusy(this);
-        }
+        //if (movementButtons.currentButton == null)
+        //{
+
+        //    movementButtons.SetBusy(this);
+        //}
+        movementButtons.Press(this);
+        ActiveVisuals();
+        OnPress?.Invoke();
     }
     public void OnPointerUp(PointerEventData eventData)
     {
-        if (movementButtons.currentButton == this)
-        {
-            DefaultVisuals();
-            OnRelease?.Invoke();
-            movementButtons.SetAvailable();
-        }
+        //if (movementButtons.currentButton == this)
+        //{
+
+        //    movementButtons.SetAvailable();
+        ButtonDone();
+        
+    }
+    public void ButtonDone()
+    {
+        DefaultVisuals();
+        OnRelease?.Invoke();
     }
 
 }

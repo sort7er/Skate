@@ -1,13 +1,17 @@
 using DG.Tweening;
+using System;
 using UnityEngine;
 
 public class GroundCheck : MonoBehaviour
 {
+
+    public event Action OnLanding;
+    public event Action OnAirborne;
+
     public float groundDistance = 0.3f;
     public Transform groundPosFront;
     public Transform groundPosBack;
     public LayerMask groundMask;
-
 
     private PlayerMovement playerMovement;
     private Transform groundPos;
@@ -47,7 +51,7 @@ public class GroundCheck : MonoBehaviour
         }
         else
         {
-            isGrounded = false;
+            NotGrounded();
             return false;
         }
     }
@@ -58,7 +62,7 @@ public class GroundCheck : MonoBehaviour
         if (hitDown.collider != null)
         {
             AllignWithGround(hitDown);
-            isGrounded= true;
+            Grounded();
             return;
         }
 
@@ -69,7 +73,7 @@ public class GroundCheck : MonoBehaviour
         //    isGrounded = true;
         //    return;
         //}
-        isGrounded = false;
+        NotGrounded();
 
     }
 
@@ -104,5 +108,22 @@ public class GroundCheck : MonoBehaviour
 
         Gizmos.color = Color.blue;
         Gizmos.DrawLine(transform.position, transform.position + normal);
+    }
+    private void Grounded()
+    {
+        if (!isGrounded)
+        {
+            Debug.Log(2);
+            OnLanding?.Invoke();
+        }
+        isGrounded = true;
+    }
+    private void NotGrounded()
+    {
+        if (isGrounded)
+        {
+            OnAirborne?.Invoke();
+        }
+        isGrounded = false;
     }
 }

@@ -1,8 +1,11 @@
 using DG.Tweening;
 using UnityEngine;
+using System;
 
 public class PlayerMovement : MonoBehaviour
 {
+    public event Action OnMultiplier;
+
     public enum PlayerAction
     {
         Down, 
@@ -47,6 +50,9 @@ public class PlayerMovement : MonoBehaviour
     private float angularVelocityThreshold = 0.2f;
 
 
+    private bool  checkRotation;
+    private float startRotation;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -89,11 +95,21 @@ public class PlayerMovement : MonoBehaviour
         {
             if (currentAction == PlayerAction.Right)
             {
+                if (rb.angularVelocity > 0)
+                {
+                    rb.angularVelocity = 0;
+                }
                 rb.AddTorque(-rotationSpeed, ForceMode2D.Force);
+                CheckRotation();
             }
             else if (currentAction == PlayerAction.Left)
             {
+                if(rb.angularVelocity < 0)
+                {
+                    rb.angularVelocity = 0;
+                }
                 rb.AddTorque(rotationSpeed, ForceMode2D.Force);
+                CheckRotation();
             }
             else if (currentAction == PlayerAction.None)
             {
@@ -120,6 +136,22 @@ public class PlayerMovement : MonoBehaviour
             rb.AddForce(Vector2.down * downSpeed, ForceMode2D.Force);
         }
 
+    }
+
+    private void CheckRotation()
+    {
+        if (!checkRotation)
+        {
+            startRotation = rb.rotation;
+            checkRotation = true;
+        }
+
+        if(rb.rotation < startRotation - 180 || rb.rotation > startRotation + 180)
+        {
+            OnMultiplier?.Invoke();
+            checkRotation= false;
+            startRotation= rb.rotation;
+        }
     }
 
     private void Update()
@@ -178,7 +210,11 @@ public class PlayerMovement : MonoBehaviour
         }
         if (!check.isGrounded)
         {
-            currentSpeed -= airDecrease * Time.deltaTime;
+            //currentSpeed = 0;
+            if (currentSpeed > 0)
+            {
+                currentSpeed -= airDecrease * Time.deltaTime;
+            }
         }
         else
         {
