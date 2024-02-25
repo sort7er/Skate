@@ -3,6 +3,7 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using DG.Tweening;
+using TMPro;
 
 public class HoldButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
@@ -19,6 +20,7 @@ public class HoldButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     public CanvasGroup group;
     public Image background;
     public Image icon;
+    public TextMeshProUGUI text;
     public MovementButtons movementButtons;
 
     private void Awake()
@@ -27,13 +29,28 @@ public class HoldButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     }
     public void ActiveVisuals()
     {
-        icon.DOColor(activeColor, tweenDuration);
+        if (icon != null)
+        {
+            icon.DOColor(activeColor, tweenDuration);
+        }
+        if (text != null)
+        {
+            text.DOColor(activeColor, tweenDuration);
+        }
+
         group.DOFade(1, tweenDuration);
         background.rectTransform.DOScale(Vector3.one * 1.1f, tweenDuration).SetEase(Ease.OutFlash);
     }
     public void DefaultVisuals()
     {
-        icon.DOColor(defaultColor, tweenDuration);
+        if (icon != null)
+        {
+            icon.DOColor(defaultColor, tweenDuration);
+        }
+        if (text!= null)
+        {
+            text.DOColor(defaultColor, tweenDuration);
+        }
         group.DOFade(0.5f, tweenDuration);
         background.rectTransform.DOScale(Vector3.one, tweenDuration).SetEase(Ease.OutFlash);
     }
